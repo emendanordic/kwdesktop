@@ -35,8 +35,9 @@ ClassMetrics = namedtuple("ClassMetrics", "name metrics")
 
 class KwLocalProjectMetrics:
 
-    def __init__(self, project_dir, metrics_ref):
+    def __init__(self, project_dir, metrics_report, metrics_ref):
         self.project_dir = project_dir
+        self.metrics_report = metrics_report
         self.metrics_dir = os.path.join(project_dir, 'workingcache', 'tables')
         self.metrics_ref = metrics_ref.strip().split(',')
         self.metrics_ref_ids = [] # to store ids of wanted metrics
@@ -57,6 +58,8 @@ class KwLocalProjectMetrics:
         self.entity_dat = os.path.join(self.metrics_dir, 'entity.dat')
         self.attribute_dat = os.path.join(self.metrics_dir, 'attribute.dat')
 
+    def generate_report(self):
+        # TODO : error handling
         self.parse_metric_kinds_dat()
         self.get_metric_ids() # needs to be done before we parse the metrics
         self.parse_metric_dat()
@@ -96,7 +99,7 @@ class KwLocalProjectMetrics:
                 col += self.get_csv_metric_values(class_metric.metrics)
                 data.append(col)
         print data
-        with open('test.csv', 'w') as fp:
+        with open(self.metrics_report, 'w') as fp:
             a = csv.writer(fp, delimiter=';')
             a.writerows(data)
 
@@ -153,17 +156,12 @@ class KwLocalProjectMetrics:
     def parse_metric_kinds_dat(self):
         with open(self.metric_kind_dat, 'r') as f:
             for line in [l.strip().split(';') for l in f]:
-                # self.metric_kind_dict[line[METRIC_KIND_ID]] = line[METRIC_KIND_DESCRIPTION]
-                # self.metric_kind_dict[line[METRIC_KIND_REF]] = line[METRIC_KIND_ID]
                 self.metric_kind_dict[line[METRIC_KIND_REF]] = MetricKind(id=line[METRIC_KIND_ID],
                 ref=line[METRIC_KIND_REF], description=line[METRIC_KIND_DESCRIPTION])
 
     def parse_metric_dat(self):
         with open(self.metric_dat, 'r') as f:
             for line in [l.strip().split(';') for l in f]:
-                # self.metric_dict[line[METRIC_REF_NUM]] = line[METRIC_KIND_DESCRIPTION]
-                # self.metric_dict[MetricId(line[METRIC_LOC_ID] ,line[METRIC_ID])] = Metric(id=line[METRIC_LOC_ID] , metric_id=line[METRIC_ID],
-                # value=line[METRIC_VALUE])
                 if line[METRIC_ID] in self.metrics_ref_ids:
                     self.metric_dict.setdefault(line[METRIC_ID], []).append(
                         Metric(id=line[METRIC_LOC_ID] , metric_id=line[METRIC_ID],
@@ -183,11 +181,7 @@ class KwLocalProjectMetrics:
     def parse_attribute_dat(self):
         with open(self.attribute_dat, 'r') as f:
             for line in [l.strip().split(';') for l in f]:
-                # self.attribute_dict.setdefault(line[ATTRIBUTE_LOC_ID], []).append(
-                # Attribute(line[ATTRIBUTE_LOC_ID], line[ATTRIBUTE_ATTRIBUTE],
-                # line[ATTRIBUTE_VALUE]))
                 attribute = self.attribute_dict.setdefault(line[ATTRIBUTE_LOC_ID],
                     Attribute(line[ATTRIBUTE_LOC_ID], [], []))
-
                 attribute.attribute.append(line[ATTRIBUTE_ATTRIBUTE])
                 attribute.value.append(line[ATTRIBUTE_VALUE])

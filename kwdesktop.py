@@ -13,14 +13,19 @@ parser = argparse.ArgumentParser(description='Klocwork Desktop Analysis Script.'
 parser.add_argument('--path', required=False, help='Path to Klocwork desktop installation, e.g. C:\\Klocwork\\Desktop\\X.Y\\bin')
 parser.add_argument('--build-spec', required=False, default='kwinject.out')
 parser.add_argument('--url', required=False, help='URL to the Klocwork server and project, e.g. http://klocworkserver:8080/myproject')
-parser.add_argument('--project-dir', required=False, default='.', help='Location of the local Klocwork project. Default is the current directory, i.e. \'.\'')
-parser.add_argument('--license-host', required=False)
-parser.add_argument('--license-port', required=False)
-parser.add_argument('--silent', dest='silent', action='store_true', help='Do not prompt user about opening Klocwork GUI (kwgcheck)')
-parser.add_argument('--run', dest='run', action='store_true', help='Also trigger the Klocwork analysis')
-parser.add_argument('--report-file', required=False, help='Specify a report file. Requires --report-format')
-parser.add_argument('--report-format', required=False, help='Specify a report format. Requires --report-file')
+parser.add_argument('--project-dir', required=False, default='.kwlp', help='Location of the .kwlp directory. Default is in the current directory, i.e. \'.kwlp\'')
+parser.add_argument('--settings-dir', required=False, default='.kwps', help='Location of the .kwps directory. Default is in the current directory, i.e. \'.kwps\'')
+parser.add_argument('--license-host', required=False, help='Host name for the FlexLM license server')
+parser.add_argument('--license-port', required=False, help='Port for the FlexLM license server')
+parser.add_argument('--silent', required=False, dest='silent', action='store_true', help='Do not prompt user about opening Klocwork GUI (kwgcheck)')
+parser.add_argument('--run', required=False, dest='run', action='store_true', help='Also trigger the Klocwork analysis')
+parser.add_argument('--issue-report', required=False, help='Specify a report file for detected Klocwork issues. The format is automatically detected from the extension. E.g. "--issue-report REPORT.html" will generate an HTML report')
 parser.add_argument('--report-query', required=False, help='Provide extra arguments to be passed to kwcheck when generating a report using \'kwcheck list\'. E.g. --report-query \'--system --status Analyze,Ignore\' will also show system issues with statuses Analyze and Ignore')
+parser.add_argument('--metrics-report', required=False, help='Specify a report file for software metrics detected by Klocwork. Requires a list of Klocwork metrics')
+parser.add_argument('--metrics-ref', required=False, help='Specify a list of metrics to report')
+parser.add_argument('--clean', required=False, dest='clean', action='store_true', help='Clean the existing Klocwork project (if it exists)')
+parser.add_argument('--verbose', required=False, dest='verbose', action='store_true', help='Provide verbose output')
+parser.add_argument('--log', required=False, help='Log file')
 
 def print_title(text):
     print os.linesep
@@ -36,16 +41,19 @@ def print_stage(text):
 
 def main():
     print_title('Klocwork Desktop Utility')
+    args = parser.parse_args()
     # TODO check logger settings
-    logging.basicConfig(level=logging.DEBUG)
+    logLevel = logging.INFO
+    if args.verbose:
+        logLevel = logging.DEBUG
+    logging.basicConfig(level=logLevel, format='%(asctime)s %(message)s', datefmt='%Y/%m/%d %H:%M:%S')
     logger = logging.getLogger('kwdesktop')
 
-    args = parser.parse_args()
-
     # create kwcheck object to handle for local Klocwork project
-    kwcheck = Kwcheck(logger, args.path, args.build_spec, args.url, args.project_dir,
-        args.license_host, args.license_port, args.run, args.report_file,
-        args.report_format, args.report_query)
+    kwcheck = Kwcheck(logger, args.path, args.build_spec, args.url, args.project_dir, args.settings_dir,
+        args.license_host, args.license_port, args.run, args.silent, args.issue_report,
+        args.report_query, args.metrics_report, args.metrics_ref,
+        args.clean, args.verbose)
 
     try:
         print_stage('Validation Stage')

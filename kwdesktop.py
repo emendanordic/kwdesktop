@@ -21,11 +21,10 @@ parser.add_argument('--silent', required=False, dest='silent', action='store_tru
 parser.add_argument('--run', required=False, dest='run', action='store_true', help='Also trigger the Klocwork analysis')
 parser.add_argument('--issue-report', required=False, help='Specify a report file for detected Klocwork issues. The format is automatically detected from the extension. E.g. "--issue-report REPORT.html" will generate an HTML report')
 parser.add_argument('--report-query', required=False, help='Provide extra arguments to be passed to kwcheck when generating a report using \'kwcheck list\'. E.g. --report-query \'--system --status Analyze,Ignore\' will also show system issues with statuses Analyze and Ignore')
-parser.add_argument('--metrics-report', required=False, help='Specify a report file for software metrics detected by Klocwork. Requires a list of Klocwork metrics')
+parser.add_argument('--metrics-report', required=False, help='Specify a report file for software metrics detected by Klocwork. Requires a list of Klocwork metrics which can be provided using the --metrics-ref argument')
 parser.add_argument('--metrics-ref', required=False, help='Specify a list of metrics to report')
 parser.add_argument('--clean', required=False, dest='clean', action='store_true', help='Clean the existing Klocwork project (if it exists)')
 parser.add_argument('--verbose', required=False, dest='verbose', action='store_true', help='Provide verbose output')
-parser.add_argument('--log', required=False, help='Log file')
 
 def print_title(text):
     print os.linesep
@@ -46,7 +45,7 @@ def main():
     logLevel = logging.INFO
     if args.verbose:
         logLevel = logging.DEBUG
-    logging.basicConfig(level=logLevel, format='%(asctime)s %(message)s', datefmt='%Y/%m/%d %H:%M:%S')
+    logging.basicConfig(level=logLevel, format='%(levelname)s:%(asctime)s %(message)s', datefmt='%Y/%m/%d %H:%M:%S')
     logger = logging.getLogger('kwdesktop')
 
     # create kwcheck object to handle for local Klocwork project

@@ -1,5 +1,5 @@
 
-import csv, os
+import csv, os, sys
 from collections import namedtuple
 
 METRIC_KIND_ID = 0
@@ -135,19 +135,21 @@ class KwLocalProjectMetrics:
                 else:
                     name = self.entity_dict[metric.id].name
                     # the entity is a func/class
-                    if not metric.id in self.attribute_dict:
+                    if metric.id in self.attribute_dict:
                         self.has_func_metrics = True
-                        file_metric.classes.setdefault(
-                            metric.id, ClassMetrics(name=name, metrics=[])
+                        file_metric.funcs.setdefault(
+                            metric.id, FuncMetrics(name=name, metrics=[])
                         ).metrics.append(metric)
                     else:
                         self.has_class_metrics = True
-                        file_metric.funcs.setdefault(
-                            metric.id, FuncMetrics(name=name, metrics=[])
+                        file_metric.classes.setdefault(
+                            metric.id, ClassMetrics(name=name, metrics=[])
                         ).metrics.append(metric)
 
     def get_metric_ids(self):
         for i in self.metrics_ref:
+            if not i in self.metric_kind_dict:
+                sys.exit('Could not find metrics ref {0}'.format(i))
             self.metrics_ref_ids.append(self.metric_kind_dict[i].id)
 
     def get_file_id_from_loc_id(self, loc_id):

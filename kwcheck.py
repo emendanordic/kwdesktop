@@ -92,13 +92,18 @@ class Kwcheck:
             self.kwcheck_list_options.extend(('-F', report_format))
             # add report query options to the list command used to retrieve a list of Klocwork issues
             if self.report_query:
-                self.kwcheck_list_options.extend((self.report_query))
+                # TODO : dont just split in case user provides argument with quotes
+                self.kwcheck_list_options.extend((self.report_query.strip().split()))
             # generate report
             ret_code = self.execute_cmd(self.create_kwcheck_list_cmd())
 
         if self.metrics_report:
-            kwlpmetrics = KwLocalProjectMetrics(project_dir, metrics_report, metrics_ref)
-            kwlpmetrics.generate_report()
+            kwlpmetrics = KwLocalProjectMetrics(self.project_dir,
+                self.metrics_report, self.metrics_ref)
+            try:
+                kwlpmetrics.generate_report()
+            except SystemExit as e:
+                sys.exit(e)
 
         return ret_code
 
@@ -222,7 +227,6 @@ class Kwcheck:
                     break
                 if output:
                     print output.strip()
-                rc = proc.poll()
             self.logger.debug('Command finished')
         else:
             while proc.poll() == None:

@@ -105,7 +105,8 @@ class KwLocalProjectMetrics:
                 data.append(col)
 
         self.logger.debug("Opening CSV file {0} for writing".format(self.metrics_report))
-        with open(self.metrics_report, 'w') as fp:
+        # only compatible with v2.x
+        with open(self.metrics_report, 'wb') as fp:
             a = csv.writer(fp, delimiter=';')
             self.logger.debug("Writing CSV data...")
             a.writerows(data)

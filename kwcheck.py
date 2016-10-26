@@ -44,12 +44,14 @@ class Kwcheck:
         self.clean = clean
         self.verbose = verbose
 
+        exe = '.exe' if os.name == 'nt' else ''
+        
         if self.path:
-            self.kwcheck_exe = os.path.join(self.path, 'kwcheck')
-            self.kwgcheck_exe = os.path.join(self.path, 'kwgcheck')
+            self.kwcheck_exe = os.path.join(self.path, 'kwcheck' + exe)
+            self.kwgcheck_exe = os.path.join(self.path, 'kwgcheck' + exe)
         else:
-            self.kwcheck_exe = 'kwcheck'
-            self.kwgcheck_exe = 'kwgcheck'
+            self.kwcheck_exe = 'kwcheck' + exe
+            self.kwgcheck_exe = 'kwgcheck' + exe
 
         if self.project_dir != None:
             self.add_kwcheck_option('--project-dir', self.project_dir, kwcheck_create=True, kwcheck_import=True, kwcheck_run=True, kwcheck_list=True)
@@ -169,7 +171,7 @@ class Kwcheck:
     def validate(self):
         self.logger.info('Starting validation stage')
         self.logger.info('Validating kwcheck executable...')
-        if not self.hasExecutable():
+        if not self.has_executable():
             sys.exit('Cannot find kwcheck executable "{0}"'.format(self.kwcheck_exe))
         self.logger.info('Validating build specficiation exists...')
         if not os.path.exists(self.build_spec):
@@ -209,9 +211,10 @@ class Kwcheck:
         if os.path.exists(self.project_dir) and os.path.exists(self.settings_dir):
             return True
         return False
-
+        
+        
     # check if executable kwcheck exists
-    def hasExecutable(self):
+    def has_executable(self):
         def is_exe(fpath):
             return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 

@@ -1,3 +1,12 @@
+# **************************************************************************************************
+#  Emenda Nordic AB.
+#
+# Disclaimer: Please note that this software or software component is released by Emenda Nordic AB
+# on a non-proprietary basis for commercial or non-commercial use with no warranty. Emenda Nordic AB
+# will not be liable for any damage or loss caused by the use of this software. Redistribution is
+# only allowed with prior consent.
+#
+# **************************************************************************************************
 
 from kwlpmetrics import KwLocalProjectMetrics
 
@@ -6,9 +15,12 @@ from subprocess import call, Popen, PIPE
 
 class Kwcheck:
 
-    def __init__(self, logger, path, build_spec, url, project_dir, settings_dir, license_host, license_port, run, silent,  issue_report,
-    report_query, metrics_report, metrics_ref, clean, verbose):
-        self.REPORT_FORMAT_TYPE = {'csv':'scriptable','txt':'short','xml':'xml', 'html':'html'}
+    def __init__(self, logger, path, build_spec, url, project_dir, settings_dir,
+        license_host, license_port, run, silent,  issue_report,
+        report_query, metrics_report, metrics_ref, clean, verbose):
+
+        self.REPORT_FORMAT_TYPE = {'csv':'scriptable','txt':'short','xml':'xml',
+            'html':'html'}
         # options for kwcheck commands
         self.kwcheck_create_options = []
         self.kwcheck_import_options = []
@@ -98,7 +110,7 @@ class Kwcheck:
             ret_code = self.execute_cmd(self.create_kwcheck_list_cmd())
 
         if self.metrics_report:
-            kwlpmetrics = KwLocalProjectMetrics(self.project_dir,
+            kwlpmetrics = KwLocalProjectMetrics(self.logger, self.project_dir,
                 self.metrics_report, self.metrics_ref)
             try:
                 kwlpmetrics.generate_report()

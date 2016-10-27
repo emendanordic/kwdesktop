@@ -19,7 +19,7 @@ class Kwcheck:
         license_host, license_port, run, silent,  issue_report,
         report_query, metrics_report, metrics_ref, clean, verbose):
 
-        self.REPORT_FORMAT_TYPE = {'csv':'scriptable','txt':'short','xml':'xml',
+        self.REPORT_FORMAT_TYPE = {'csv':'scriptable','txt':'detailed','xml':'xml',
             'html':'html'}
         # options for kwcheck commands
         self.kwcheck_create_options = []
@@ -45,7 +45,7 @@ class Kwcheck:
         self.verbose = verbose
 
         exe = '.exe' if os.name == 'nt' else ''
-        
+
         if self.path:
             self.kwcheck_exe = os.path.join(self.path, 'kwcheck' + exe)
             self.kwgcheck_exe = os.path.join(self.path, 'kwgcheck' + exe)
@@ -211,8 +211,8 @@ class Kwcheck:
         if os.path.exists(self.project_dir) and os.path.exists(self.settings_dir):
             return True
         return False
-        
-        
+
+
     # check if executable kwcheck exists
     def has_executable(self):
         def is_exe(fpath):

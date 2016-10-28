@@ -8,7 +8,7 @@
 #
 # **************************************************************************************************
 
-from kwlpmetrics import KwLocalProjectMetrics
+from kwmetrics.kwmetrics import KwMetrics
 
 import os, shutil, sys, time
 from subprocess import call, Popen, PIPE
@@ -112,10 +112,12 @@ class Kwcheck:
             ret_code = self.execute_cmd(self.create_kwcheck_list_cmd())
 
         if self.metrics_report:
-            kwlpmetrics = KwLocalProjectMetrics(self.logger, self.project_dir,
+            tables_dir = os.path.join(self.project_dir, 'workingcache',
+                'tables')
+            kwmetrics = KwMetrics(self.logger, tables_dir,
                 self.metrics_report, self.metrics_ref)
             try:
-                kwlpmetrics.generate_report()
+                kwmetrics.generate_report()
             except SystemExit as e:
                 sys.exit(e)
 

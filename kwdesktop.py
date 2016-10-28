@@ -23,7 +23,7 @@
 
 from kwcheck import Kwcheck
 
-import argparse, csv, logging, os, shutil
+import argparse, csv, logging, os, shutil, sys
 from subprocess import call, PIPE, Popen
 
 parser = argparse.ArgumentParser(description='Klocwork Desktop Analysis Script.')
@@ -107,8 +107,10 @@ def main():
         kwcheck.open_gui()
     except SystemExit as e:
         logger.error(e)
+        sys.exit(1)
     except OSError as e:
         logger.error(e)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
